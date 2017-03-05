@@ -1,5 +1,7 @@
 # BungeeChannelApi
 
+[Javadocs](https://leonardosnt.github.io/BungeeChannelApi/io/github/leonardosnt/bungeechannelapi/BungeeChannelApi.html)
+
 ##### Some examples:
 
 Instantiate:
