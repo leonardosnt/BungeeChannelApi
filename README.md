@@ -77,6 +77,7 @@ public class Test extends JavaPlugin implements PluginMessageListener {
       String subchannel = in.readUTF();
       
       if (subchannel.equals("PlayerCount")) {
+        String server = in.readUTF();
         int count = in.readInt();
         
         // do something with 'count'
