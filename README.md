@@ -45,3 +45,43 @@ api.registerForwardListener("someName", (channelName, player, data) -> {
   Bukkit.broadcastMessage(Arrays.toString(data));
 });
 ```
+
+##### Comparison (without BungeeChannelApi)
+This code does the same thing that the first example.
+```java
+
+public class Test extends JavaPlugin implements PluginMessageListener {
+
+    @Override
+    public void onEnable() {
+      this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+      this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+    }
+
+    // Send a message requesting player count
+    public void requestPlayerCount() {
+      ByteArrayDataOutput out = ByteStreams.newDataOutput();
+      out.writeUTF("PlayerCount");
+      out.writeUTF("ALL"); // all servers
+
+      Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+
+      player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+    }
+    
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+      if (!channel.equals("BungeeCord")) return;
+      
+      ByteArrayDataInput in = ByteStreams.newDataInput(message);
+      String subchannel = in.readUTF();
+      
+      if (subchannel.equals("PlayerCount")) {
+        int count = in.readInt();
+        
+        // do something with 'count'
+      }
+    }
+
+}
+```
