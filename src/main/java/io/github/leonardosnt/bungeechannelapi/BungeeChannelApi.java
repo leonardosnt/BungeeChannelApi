@@ -104,6 +104,7 @@ public class BungeeChannelApi {
    * @param serverName the server name of the server to get the player count of, or ALL to get the global player count
    * @return A {@link CompletableFuture} that, when completed, will return
    *         the amount of players on a certain server, or on ALL the servers.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public CompletableFuture<Integer> getPlayerCount(String serverName) {
     Player player = getFirstPlayer();
@@ -126,6 +127,7 @@ public class BungeeChannelApi {
    * @param serverName the name of the server to get the list of connected players, or ALL for global online player list
    * @return A {@link CompletableFuture} that, when completed, will return a
    *         list of players connected on a certain server, or on ALL the servers.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public CompletableFuture<List<String>> getPlayerList(String serverName) {
     Player player = getFirstPlayer();
@@ -143,10 +145,11 @@ public class BungeeChannelApi {
   }
 
   /**
-   * Get a list of server name strings, as defined in BungeeCord's config.yml
+   * Get a list of server name strings, as defined in BungeeCord's config.yml.
    *
    * @return A {@link CompletableFuture} that, when completed, will return a
-   *         list of server name strings, as defined in BungeeCord's config.yml
+   *         list of server name strings, as defined in BungeeCord's config.yml.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public CompletableFuture<List<String>> getServers() {
     Player player = getFirstPlayer();
@@ -165,8 +168,8 @@ public class BungeeChannelApi {
   /**
    * Connects a player to said subserver.
    *
-   * @param player the player you want to teleport
-   * @param serverName the name of server to connect to, as defined in BungeeCord config.yml
+   * @param player the player you want to teleport.
+   * @param serverName the name of server to connect to, as defined in BungeeCord config.yml.
    */
   public void connect(Player player, String serverName) {
     ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -178,8 +181,9 @@ public class BungeeChannelApi {
   /**
    * Connect a named player to said subserver.
    *
-   * @param playerName name of the player to teleport
-   * @param server name of server to connect to, as defined in BungeeCord config.yml
+   * @param playerName name of the player to teleport.
+   * @param server name of server to connect to, as defined in BungeeCord config.yml.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public void connectOther(String playerName, String server) {
     Player player = getFirstPlayer();
@@ -214,8 +218,9 @@ public class BungeeChannelApi {
   /**
    * Send a message (as in, a chat message) to the specified player.
    *
-   * @param playerName the name of the player to send the chat message
-   * @param message the message to send to the player
+   * @param playerName the name of the player to send the chat message.
+   * @param message the message to send to the player.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public void sendMessage(String playerName, String message) {
     Player player = getFirstPlayer();
@@ -231,7 +236,8 @@ public class BungeeChannelApi {
    * Get this server's name, as defined in BungeeCord's config.yml
    *
    * @return A {@link CompletableFuture} that, when completed, will return
-   *         the {@code server's} name, as defined in BungeeCord's config.yml
+   *         the {@code server's} name, as defined in BungeeCord's config.yml.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public CompletableFuture<String> getServer() {
     Player player = getFirstPlayer();
@@ -248,10 +254,10 @@ public class BungeeChannelApi {
   }
 
   /**
-   * Request the UUID of this player
+   * Request the UUID of this player.
    *
-   * @param player The player whose UUID you requested
-   * @return A {@link CompletableFuture} that, when completed, will return the UUID of {@code player}
+   * @param player The player whose UUID you requested.
+   * @return A {@link CompletableFuture} that, when completed, will return the UUID of {@code player}.
    */
   public CompletableFuture<String> getUUID(Player player) {
     CompletableFuture<String> future = new CompletableFuture<>();
@@ -267,10 +273,11 @@ public class BungeeChannelApi {
   }
 
   /**
-   * Request the UUID of any player connected to the BungeeCord proxy
+   * Request the UUID of any player connected to the BungeeCord proxy.
    *
-   * @param playerName the name of the player whose UUID you would like
-   * @return A {@link CompletableFuture} that, when completed, will return the UUID of {@code playerName}
+   * @param playerName the name of the player whose UUID you would like.
+   * @return A {@link CompletableFuture} that, when completed, will return the UUID of {@code playerName}.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public CompletableFuture<String> getUUID(String playerName) {
     Player player = getFirstPlayer();
@@ -288,10 +295,11 @@ public class BungeeChannelApi {
   }
 
   /**
-   * Request the IP of any server on this proxy
+   * Request the IP of any server on this proxy.
    *
-   * @param serverName the name of the server
-   * @return A {@link CompletableFuture} that, when completed, will return the requested ip
+   * @param serverName the name of the server.
+   * @return A {@link CompletableFuture} that, when completed, will return the requested ip.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public CompletableFuture<InetSocketAddress> getServerIp(String serverName) {
     Player player = getFirstPlayer();
@@ -309,10 +317,11 @@ public class BungeeChannelApi {
   }
 
   /**
-   * Kick any player on this proxy
+   * Kick any player on this proxy.
    *
-   * @param playerName the name of the player
-   * @param kickMessage the reason the player is kicked with
+   * @param playerName the name of the player.
+   * @param kickMessage the reason the player is kicked with.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public void kickPlayer(String playerName, String kickMessage) {
     Player player = getFirstPlayer();
@@ -339,6 +348,7 @@ public class BungeeChannelApi {
    *
    * @param channelName Subchannel for plugin usage.
    * @param data data to send.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public void forward(String server, String channelName, byte[] data) {
     Player player = getFirstPlayer();
@@ -358,6 +368,7 @@ public class BungeeChannelApi {
    * @param playerName the name of the player to send to.
    * @param channelName Subchannel for plugin usage.
    * @param data data to send.
+   * @throws IllegalArgumentException if there is no players online.
    */
   public void forwardToPlayer(String playerName, String channelName, byte[] data) {
     Player player = getFirstPlayer();
