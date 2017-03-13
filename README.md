@@ -8,7 +8,7 @@ Instantiate:
 ```java
 // Create new instance for this plugin.
 // Same of "new BungeeChannelApi(this);"
-BungeeChannelApi api = BungeeChannelApi.of(this);
+BungeeChannelApi api = BungeeChannelApi.of(this); // this = Plugin instance.
 ```
 
 Get online player count:
