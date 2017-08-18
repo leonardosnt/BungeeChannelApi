@@ -100,7 +100,7 @@ public class BungeeChannelApi {
     CompletableFuture<Integer> future = new CompletableFuture<>();
 
     synchronized (callbackMap) {
-      callbackMap.compute("PlayerCount", this.computeQueueValue(future));
+      callbackMap.compute("PlayerCount-" + serverName, this.computeQueueValue(future));
     }
 
     ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -123,7 +123,7 @@ public class BungeeChannelApi {
     CompletableFuture<List<String>> future = new CompletableFuture<>();
 
     synchronized (callbackMap) {
-      callbackMap.compute("PlayerList", this.computeQueueValue(future));
+      callbackMap.compute("PlayerList-" + serverName, this.computeQueueValue(future));
     }
 
     ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -273,7 +273,7 @@ public class BungeeChannelApi {
     CompletableFuture<String> future = new CompletableFuture<>();
 
     synchronized (callbackMap) {
-      callbackMap.compute("UUIDOther", this.computeQueueValue(future));
+      callbackMap.compute("UUIDOther-" + playerName, this.computeQueueValue(future));
     }
 
     ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -295,7 +295,7 @@ public class BungeeChannelApi {
     CompletableFuture<InetSocketAddress> future = new CompletableFuture<>();
 
     synchronized (callbackMap) {
-      callbackMap.compute("ServerIP", this.computeQueueValue(future));
+      callbackMap.compute("ServerIP-" + serverName, this.computeQueueValue(future));
     }
 
     ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -379,7 +379,48 @@ public class BungeeChannelApi {
     String subchannel = input.readUTF();
 
     synchronized (callbackMap) {
-      Queue<CompletableFuture<?>> callbacks = callbackMap.get(subchannel);
+      Queue<CompletableFuture<?>> callbacks;
+
+      if (subchannel.equals("PlayerCount") || subchannel.equals("PlayerList") ||
+          subchannel.equals("UUIDOther") || subchannel.equals("ServerIP")) {
+        String identifier = input.readUTF(); // Server/player name
+        callbacks = callbackMap.get(subchannel + "-" + identifier);
+
+        CompletableFuture<?> callback = callbacks.poll();
+
+        if (callback == null) {
+          return;
+        }
+
+        try {
+          switch (subchannel) {
+            case "PlayerCount":
+              ((CompletableFuture<Integer>) callback).complete(Integer.valueOf(input.readInt()));
+              break;
+
+            case "PlayerList":
+              ((CompletableFuture<List<String>>) callback).complete(Arrays.asList(input.readUTF().split(", ")));
+              break;
+
+            case "UUIDOther":
+              ((CompletableFuture<String>) callback).complete(input.readUTF());
+              break;
+
+            case "ServerIP": {
+              String ip = input.readUTF();
+              int port = input.readUnsignedShort();
+              ((CompletableFuture<InetSocketAddress>) callback).complete(new InetSocketAddress(ip, port));
+              break;
+            }
+          }
+        } catch(Exception ex) {
+          callback.completeExceptionally(ex);
+        }
+
+        return;
+      }
+
+      callbacks = callbackMap.get(subchannel);
 
       if (callbacks == null) {
         short dataLength = input.readShort();
@@ -410,16 +451,6 @@ public class BungeeChannelApi {
 
       try {
         switch (subchannel) {
-          case "PlayerCount":
-            input.readUTF(); // ignore server name
-            ((CompletableFuture<Integer>) callback).complete(Integer.valueOf(input.readInt()));
-            break;
-
-          case "PlayerList":
-            input.readUTF(); // ignore server name
-            ((CompletableFuture<List<String>>) callback).complete(Arrays.asList(input.readUTF().split(", ")));
-            break;
-
           case "GetServers":
             ((CompletableFuture<List<String>>) callback).complete(Arrays.asList(input.readUTF().split(", ")));
             break;
@@ -428,19 +459,6 @@ public class BungeeChannelApi {
           case "UUID":
             ((CompletableFuture<String>) callback).complete(input.readUTF());
             break;
-
-          case "UUIDOther":
-            input.readUTF(); // ignore player name
-            ((CompletableFuture<String>) callback).complete(input.readUTF());
-            break;
-
-          case "ServerIP": {
-            input.readUTF(); // ignore server name
-            String ip = input.readUTF();
-            int port = input.readUnsignedShort();
-            ((CompletableFuture<InetSocketAddress>) callback).complete(new InetSocketAddress(ip, port));
-            break;
-          }
 
           case "IP": {
             String ip = input.readUTF();
@@ -477,6 +495,8 @@ public class BungeeChannelApi {
   }
 
   private Player getFirstPlayer() {
+    // If you are running old bukkit versions, you need to change this to
+    // Player ret = Bukkit.getOnlinePlayers()[0];
     Player ret = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
     if (ret == null) {
