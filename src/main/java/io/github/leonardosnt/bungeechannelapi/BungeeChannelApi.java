@@ -10,6 +10,7 @@ package io.github.leonardosnt.bungeechannelapi;
 import java.net.InetSocketAddress;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -495,15 +496,25 @@ public class BungeeChannelApi {
   }
 
   private Player getFirstPlayer() {
-    // If you are running old bukkit versions, you need to change this to
-    // Player ret = Bukkit.getOnlinePlayers()[0];
-    Player ret = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+    /**
+     * if Bukkit Version < 1.7.10 then Bukkit.getOnlinePlayers() will return
+     * a Player[] otherwise it'll return a Collection<? extends Player>.
+     */
+    Player firstPlayer = getFirstPlayer0(Bukkit.getOnlinePlayers());
 
-    if (ret == null) {
+    if (firstPlayer == null) {
       throw new IllegalArgumentException("Bungee Messaging Api requires at least one player online.");
     }
 
-    return ret;
+    return firstPlayer;
+  }
+
+  private Player getFirstPlayer0(Player[] playerArray) {
+    return playerArray.length > 0 ? playerArray[0] : null;
+  }
+
+  private Player getFirstPlayer0(Collection<? extends Player> playerCollection) {
+    return Iterables.getFirst(playerCollection, null);
   }
 
   @FunctionalInterface
