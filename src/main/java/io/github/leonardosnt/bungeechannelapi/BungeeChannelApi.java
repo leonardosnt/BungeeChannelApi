@@ -387,11 +387,11 @@ public class BungeeChannelApi {
         String identifier = input.readUTF(); // Server/player name
         callbacks = callbackMap.get(subchannel + "-" + identifier);
 
-        CompletableFuture<?> callback = callbacks.poll();
-
-        if (callback == null) {
+        if (callbacks == null || callbacks.isEmpty())  {
           return;
         }
+
+        CompletableFuture<?> callback = callbacks.poll();
 
         try {
           switch (subchannel) {
@@ -444,11 +444,11 @@ public class BungeeChannelApi {
         return;
       }
 
-      CompletableFuture<?> callback = callbacks.poll();
-
-      if (callback == null) {
+      if (callbacks.isEmpty()) {
         return;
       }
+
+      final CompletableFuture<?> callback = callbacks.poll();
 
       try {
         switch (subchannel) {
@@ -509,6 +509,7 @@ public class BungeeChannelApi {
     return firstPlayer;
   }
 
+  @SuppressWarnings("unused")
   private Player getFirstPlayer0(Player[] playerArray) {
     return playerArray.length > 0 ? playerArray[0] : null;
   }
