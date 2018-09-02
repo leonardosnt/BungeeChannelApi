@@ -1,6 +1,6 @@
 # BungeeChannelApi
 
-[Javadocs](https://leonardosnt.github.io/BungeeChannelApi/io/github/leonardosnt/bungeechannelapi/BungeeChannelApi.html)
+[Javadocs](https://ci.codemc.org/job/leonardosnt/BungeeChannelApi/javadoc)
 
 ##### Development builds:
 
