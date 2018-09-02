@@ -2,6 +2,61 @@
 
 [Javadocs](https://leonardosnt.github.io/BungeeChannelApi/io/github/leonardosnt/bungeechannelapi/BungeeChannelApi.html)
 
+##### Development builds:
+
+[![Build Status](https://ci.codemc.org/buildStatus/icon?job=leonardosnt/BungeeChannelApi)](https://ci.codemc.org/job/leonardosnt/BungeeChannelApi)
+
+##### Maven dependency:
+
+How to include BungeeChannelApi into your maven project:
+
+```xml
+    <repositories>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.leonardosnt</groupId>
+            <artifactId>bungeechannelapi</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+```
+
+Remember to include/relocate the library into your final jar, example:
+
+```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>io.github.leonardosnt.bungeechannelapi</pattern>
+                            <shadedPattern>YOUR.PLUGIN.PACKAGE.libs.bungeechannelapi</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+```
+
 ##### Some examples:
 
 Instantiate:
