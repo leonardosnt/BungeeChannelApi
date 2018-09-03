@@ -87,17 +87,25 @@ Send a message to a player:
 api.sendMessage("leonardosnt", "§cHello world");
 ```
 
-Listen "forward" channels:
+#### Custom subchannels/messages using [Forward](https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/#forward) 
+
+Send:
 ```java
-// global listener (for all custom channels) 
+byte[] ourData = "Hello World".getBytes();
+api.forward("serverName", "example", ourData);
+```
+
+Listen:
+```java
+// global listener (for all subchannels) 
 api.registerForwardListener((channelName, player, data) -> {
   Bukkit.broadcastMessage(channelName + " -> " + Arrays.toString(data));
 });
 
 // specific channel
-api.registerForwardListener("someName", (channelName, player, data) -> {
-  // in this case channelName is "someName"
-  Bukkit.broadcastMessage(Arrays.toString(data));
+api.registerForwardListener("example", (channelName, player, data) -> {
+  // in this case channelName is "example"
+  Bukkit.broadcastMessage("Message sent using forward: " + new String(data));
 });
 ```
 
