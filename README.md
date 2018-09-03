@@ -59,6 +59,8 @@ Remember to include/relocate the library into your final jar, example:
 
 ##### Some examples:
 
+BungeeChannelApi uses [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html)'s, so make sure you know how it works before using this.
+
 Instantiate:
 ```java
 // Create new instance for this plugin.
