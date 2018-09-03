@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +34,8 @@ import com.google.common.io.ByteStreams;
 /**
  * Documentation copied from https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/
  *
- * @author leonardosnt (leonardosnt@outlook.com)
+ * @author leonardosnt (leonrdsnt@gmail.com)
+ * @see <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/">https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/</a>
  */
 public class BungeeChannelApi {
 
@@ -46,8 +48,12 @@ public class BungeeChannelApi {
   private Map<String, ForwardConsumer> forwardListeners;
   private ForwardConsumer globalForwardListener;
 
-  /*
+  /**
    * Get or create new BungeeChannelApi instance
+   *
+   * @param plugin the plugin instance.
+   * @return the BungeeChannelApi instance for the {@code plugin}
+   * @throws NullPointerException if the {@code plugin} is {@code null}
    */
   public synchronized static BungeeChannelApi of(Plugin plugin) {
     return registeredInstances.compute(plugin, (k, v) -> {
@@ -57,10 +63,11 @@ public class BungeeChannelApi {
   }
 
   public BungeeChannelApi(Plugin plugin) {
-    this.plugin = plugin;
+    this.plugin = Objects.requireNonNull(plugin, "plugin cannot be null");
     this.callbackMap = new HashMap<>();
-
-    // Prevent dev's from registering multiple channel listeners
+    
+    // Prevent dev's from registering multiple channel listeners,
+    // by unregistering the old instance.
     synchronized (registeredInstances) {
       registeredInstances.compute(plugin, (k, oldInstance) -> {
         if (oldInstance != null) oldInstance.unregister();
@@ -75,16 +82,29 @@ public class BungeeChannelApi {
     messenger.registerIncomingPluginChannel(plugin, "BungeeCord", messageListener);
   }
 
+  /**
+   * Set a global listener for all 'forwarded' messages.
+   *
+   * @param globalListener the listener
+   * @see <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/#forward">https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/#forward</a>
+   */
   public void registerForwardListener(ForwardConsumer globalListener) {
     this.globalForwardListener = globalListener;
   }
 
-  public void registerForwardListener(String targetChannel, ForwardConsumer listener) {
+  /**
+   * Set a listener for all 'forwarded' messages in a specific subchannel.
+   *
+   * @param channelName the subchannel name
+   * @param listener the listener
+   * @see <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/#forward">https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/#forward</a>
+   */
+  public void registerForwardListener(String channelName, ForwardConsumer listener) {
     if (forwardListeners == null) {
       forwardListeners = new HashMap<>();
     }
     synchronized (forwardListeners) {
-      forwardListeners.put(targetChannel, listener);
+      forwardListeners.put(channelName, listener);
     }
   }
 
@@ -503,7 +523,7 @@ public class BungeeChannelApi {
     Player firstPlayer = getFirstPlayer0(Bukkit.getOnlinePlayers());
 
     if (firstPlayer == null) {
-      throw new IllegalArgumentException("Bungee Messaging Api requires at least one player online.");
+      throw new IllegalArgumentException("Bungee Messaging Api requires at least one player to be online.");
     }
 
     return firstPlayer;
