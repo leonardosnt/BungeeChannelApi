@@ -1,10 +1,10 @@
 # BungeeChannelApi
 
-[Javadocs](https://ci.codemc.org/job/leonardosnt/BungeeChannelApi/javadoc)
+[Javadocs](https://ci.codemc.org/job/leonardosnt/job/BungeeChannelApi/javadoc)
 
 ##### Development builds:
 
-[![Build Status](https://ci.codemc.org/buildStatus/icon?job=leonardosnt/BungeeChannelApi)](https://ci.codemc.org/job/leonardosnt/BungeeChannelApi)
+[![Build Status](https://ci.codemc.org/buildStatus/icon?job=leonardosnt/BungeeChannelApi)](https://ci.codemc.org/job/leonardosnt/job/BungeeChannelApi)
 
 ##### Maven dependency:
 
